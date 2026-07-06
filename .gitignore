@@ -1,0 +1,38 @@
+# Unreal Engine generated files
+Binaries
+DerivedDataCache
+Intermediate
+Saved
+Build
+
+# IDE files
+.vscode
+.vs
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+
+# Visual Studio
+.vsconfig
+Browse.VC.db
+*.VC.VC.opendb
+
+# Rider
+.idea
+
+# Content
+Content/*
+!Content/Maps/
+!Content/Maps/*
+
+# Plugins compiled binaries
+Plugins/*/Binaries
+Plugins/*/Intermediate
+
+# Python
+__pycache__
