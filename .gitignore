@@ -25,11 +25,6 @@ Browse.VC.db
 # Rider
 .idea
 
-# Content
-Content/*
-!Content/Maps/
-!Content/Maps/*
-
 # Plugins compiled binaries
 Plugins/*/Binaries
 Plugins/*/Intermediate
