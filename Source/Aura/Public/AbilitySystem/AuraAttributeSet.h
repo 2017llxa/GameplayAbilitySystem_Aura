@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAttributeSet.generated.h"
 
+
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
@@ -27,6 +28,14 @@ public:
 
 	// 正确拼写
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//在属性值改变之前执行（可做最大最小值限制）
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
+	//在游戏效果执行之后 （从Data中获取游戏组件等数据）
+	//返回 FGameplayEffectContextHandle，用来提取 Source（施加者）和 Target（承受者）相关信息。
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+	
 
 	// Attributes
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Health)

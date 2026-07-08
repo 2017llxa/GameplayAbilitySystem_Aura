@@ -1,6 +1,10 @@
 
 #include "AbilitySystem/AuraAttributeSet.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffectExtension.h"
+#include "GameFramework/Character.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -20,6 +24,65 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 }
+
+void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+	
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue,0,100);
+	}
+	if (Attribute == GetManaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue,0,100);
+	}
+}
+
+void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+		/*=== Target（承受者）===
+		Data.Target 就是承受这次修改的 ASC
+		UAbilitySystemComponent* TargetASC = Data.Target;
+		AActor* TargetAvatar = Data.Target->GetAvatarActor();   // 承受者角色（Pawn/Character）
+		   === Source（施加者）===
+	    从 EffectSpec 的 Context 里取，而不是从 Data 取
+		const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
+		UAbilitySystemComponent* SourceASC = Context.GetInstigatorAbilitySystemComponent(); // 施加者 ASC
+		}*/
+		//Source（施加者）和 Target（承受者）
+	
+		FGameplayEffectContextHandle EffectContextHandle = Data.EffectSpec.GetContext();
+		UAbilitySystemComponent* SourceASC = EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	if (IsValid(SourceASC) && SourceASC->AbilityActorInfo.IsValid() && SourceASC->AbilityActorInfo->AvatarActor.Get())
+	{
+		AActor* SourceAvatarActor = SourceASC->AbilityActorInfo->AvatarActor.Get();
+		AController* SourceController = SourceASC->AbilityActorInfo->PlayerController.Get();
+		
+		if (SourceController == nullptr && SourceAvatarActor!= nullptr)
+		{
+			if (const APawn* Pawn = Cast<APawn>(SourceAvatarActor))
+			{
+				SourceController = Pawn->GetController();
+			}
+		}
+		if (SourceController)
+		{
+			ACharacter* SourceCharacter = Cast<ACharacter>(SourceController->GetPawn());
+		}
+	}
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		AActor* TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		AController* TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		ACharacter* TargetCharacter = Cast<ACharacter>(TargetActor);
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	}
+	
+}
+
 
 // Replication callbacks
 void UAuraAttributeSet::OnRep_Health(FGameplayAttributeData OldHealth)
