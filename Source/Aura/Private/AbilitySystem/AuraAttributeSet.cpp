@@ -42,47 +42,67 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-	
-		/*=== Target（承受者）===
+
+	FEffectProperties Props;
+	SetEffectPropertiesValue(Data,Props);
+
+	/*//打印结构体
+	for (TFieldIterator<FProperty> It(FEffectProperties::StaticStruct()); It; ++It)
+		{
+			FProperty* Prop = *It;
+			if (auto* ObjectProp = CastField<FObjectProperty>(Prop))
+			{
+			const void* ValuePtr = ObjectProp->ContainerPtrToValuePtr<void>(&Props);
+			UObject* Obj = ObjectProp->GetObjectPropertyValue(ValuePtr);
+				UE_LOG(LogTemp, Warning, TEXT("%s = %s"),
+					*Prop->GetName(), *GetNameSafe(Obj));
+			}
+		}
+	//源对象（药水）
+	UE_LOG(LogTemp, Log,TEXT("%s"),*GetNameSafe(Props.EffectContextHandle.GetSourceObject()))*/
+}
+
+void UAuraAttributeSet::SetEffectPropertiesValue(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props)
+{
+	/*=== Target（承受者）===
 		Data.Target 就是承受这次修改的 ASC
 		UAbilitySystemComponent* TargetASC = Data.Target;
 		AActor* TargetAvatar = Data.Target->GetAvatarActor();   // 承受者角色（Pawn/Character）
 		   === Source（施加者）===
-	    从 EffectSpec 的 Context 里取，而不是从 Data 取
+		从 EffectSpec 的 Context 里取，而不是从 Data 取
 		const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
 		UAbilitySystemComponent* SourceASC = Context.GetInstigatorAbilitySystemComponent(); // 施加者 ASC
 		}*/
-		//Source（施加者）和 Target（承受者）
+	//Source（施加者）和 Target（承受者）
 	
-		FGameplayEffectContextHandle EffectContextHandle = Data.EffectSpec.GetContext();
-		UAbilitySystemComponent* SourceASC = EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
-	if (IsValid(SourceASC) && SourceASC->AbilityActorInfo.IsValid() && SourceASC->AbilityActorInfo->AvatarActor.Get())
+	Props.EffectContextHandle = Data.EffectSpec.GetContext();
+	
+	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.Get())
 	{
-		AActor* SourceAvatarActor = SourceASC->AbilityActorInfo->AvatarActor.Get();
-		AController* SourceController = SourceASC->AbilityActorInfo->PlayerController.Get();
+		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
+		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
 		
-		if (SourceController == nullptr && SourceAvatarActor!= nullptr)
+		if (Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
 		{
-			if (const APawn* Pawn = Cast<APawn>(SourceAvatarActor))
+			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
 			{
-				SourceController = Pawn->GetController();
+				Props.SourceController = Pawn->GetController();
 			}
 		}
-		if (SourceController)
+		if (Props.SourceController)
 		{
-			ACharacter* SourceCharacter = Cast<ACharacter>(SourceController->GetPawn());
+			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
 		}
 	}
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
-		AActor* TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-		AController* TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		ACharacter* TargetCharacter = Cast<ACharacter>(TargetActor);
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
+		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
-	
 }
-
 
 // Replication callbacks
 void UAuraAttributeSet::OnRep_Health(FGameplayAttributeData OldHealth)
@@ -104,3 +124,5 @@ void UAuraAttributeSet::OnRep_MaxMana(FGameplayAttributeData OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
 }
+
+

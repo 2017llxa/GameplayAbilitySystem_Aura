@@ -18,6 +18,35 @@ GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
  * UAuraAttributeSet
  * 属性集示例：生命值/最大生命值/法力值/最大法力值
  */
+
+USTRUCT()
+struct  FEffectProperties////储存 FGameplayEffectContextHandle 以及 Source（施加者）和 Target（承受者）相关信息。
+{
+	GENERATED_BODY()
+	FEffectProperties(){}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+	
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC = nullptr;
+	UPROPERTY()
+	AActor* SourceAvatarActor = nullptr;
+	UPROPERTY()
+	AController* SourceController = nullptr;
+	UPROPERTY()
+	ACharacter* SourceCharacter = nullptr;
+
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC = nullptr;
+	UPROPERTY()
+	AActor* TargetAvatarActor = nullptr;
+	UPROPERTY()
+	AController* TargetController = nullptr;
+	UPROPERTY()
+	ACharacter* TargetCharacter = nullptr;
+	
+};
+
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
 {
@@ -66,4 +95,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(FGameplayAttributeData OldMaxMana);
+
+private:
+	void SetEffectPropertiesValue(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props) ;
 };
