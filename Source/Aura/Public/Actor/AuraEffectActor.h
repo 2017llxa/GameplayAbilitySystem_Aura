@@ -71,7 +71,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "ApplyEffect")
 	EEffectRemovePolicy InfiniteEffectRemovePolicy = EEffectRemovePolicy::DoNotRemove;
 
-	TMap<FActiveGameplayEffectHandle,UAbilitySystemComponent*> ActiveEffectHandles; 
+	//如果当前游戏效果为无限infinite，并且此效果需要移除；那么将其添加到TMap中
+	TMap<FActiveGameplayEffectHandle,UAbilitySystemComponent*> ActiveEffectHandles;
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "ApplyEffect")
+	float ActorLevel;
+
+	
 private:
 
 

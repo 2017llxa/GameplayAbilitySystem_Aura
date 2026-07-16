@@ -28,7 +28,7 @@ void AAuraEffectActor::ApplyGameplayEffectToTarget(AActor* TargetActor,TSubclass
 	check(GamePlayEffectClass);
 	FGameplayEffectContextHandle EffectContextHandle =  TargetASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GamePlayEffectClass,1.f,EffectContextHandle);
+	FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GamePlayEffectClass,ActorLevel,EffectContextHandle);
 	FActiveGameplayEffectHandle ActiveEffectHandle  = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	//如果当前游戏效果为无限infinite，并且此效果需要移除；那么将其添加到TMap中；
 	const bool bIsInfinite = EffectSpecHandle.Data.Get()->Def->DurationPolicy == EGameplayEffectDurationType::Infinite;

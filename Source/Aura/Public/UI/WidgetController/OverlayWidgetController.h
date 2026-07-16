@@ -31,6 +31,9 @@ public:
 	FOnManaChangedSingature OnManaChanged;
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
 	FOnMAXManaChangedSingature OnMaxManaChanged;
+		
+
+
 protected:
 
 	void HealthChanged(const FOnAttributeChangeData& Data) const;

@@ -46,7 +46,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	FEffectProperties Props;
 	SetEffectPropertiesValue(Data,Props);
 
-	/*//打印结构体
+	/*
+	打印结构体
 	for (TFieldIterator<FProperty> It(FEffectProperties::StaticStruct()); It; ++It)
 		{
 			FProperty* Prop = *It;
@@ -58,22 +59,24 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 					*Prop->GetName(), *GetNameSafe(Obj));
 			}
 		}
-	//源对象（药水）
-	UE_LOG(LogTemp, Log,TEXT("%s"),*GetNameSafe(Props.EffectContextHandle.GetSourceObject()))*/
+	源对象（药水）
+	UE_LOG(LogTemp, Log,TEXT("%s"),*GetNameSafe(Props.EffectContextHandle.GetSourceObject()))
+	*/
 }
 
 void UAuraAttributeSet::SetEffectPropertiesValue(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props)
 {
-	/*=== Target（承受者）===
+	/*
+	=== Target（承受者）===
 		Data.Target 就是承受这次修改的 ASC
 		UAbilitySystemComponent* TargetASC = Data.Target;
-		AActor* TargetAvatar = Data.Target->GetAvatarActor();   // 承受者角色（Pawn/Character）
-		   === Source（施加者）===
+		AActor* TargetAvatar = Data.Target->GetAvatarActor();承受者角色（Pawn/Character）
+	=== Source（施加者）===
 		从 EffectSpec 的 Context 里取，而不是从 Data 取
 		const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
-		UAbilitySystemComponent* SourceASC = Context.GetInstigatorAbilitySystemComponent(); // 施加者 ASC
-		}*/
-	//Source（施加者）和 Target（承受者）
+		UAbilitySystemComponent* SourceASC = Context.GetInstigatorAbilitySystemComponent();施加者 ASC
+		}
+	*/
 	
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
 	
