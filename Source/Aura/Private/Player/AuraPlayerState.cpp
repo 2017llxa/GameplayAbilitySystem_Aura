@@ -15,6 +15,8 @@
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);//复制模式为mix
  	
  	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
+
+	
     NetUpdateFrequency = 100.f;
  }
 
