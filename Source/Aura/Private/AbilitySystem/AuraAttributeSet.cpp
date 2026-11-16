@@ -8,9 +8,9 @@
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
-	// 初始化属性值
+	/* 初始化属性值  改为GE
 	InitHealth(50.f);
-	InitMana(10.f);
+	InitMana(10.f);*/
 	
 }
 
@@ -44,10 +44,12 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	
 	if (Attribute == GetHealthAttribute())
 	{
+		//NewValue = FMath::Clamp(NewValue,0,GetMaxHealth());
 		NewValue = FMath::Clamp(NewValue,0,100);
 	}
 	if (Attribute == GetManaAttribute())
 	{
+		////NewValue = FMath::Clamp(NewValue,0,GetMaxMana());
 		NewValue = FMath::Clamp(NewValue,0,100);
 	}
 }
@@ -58,7 +60,15 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 
 	FEffectProperties Props;
 	SetEffectPropertiesValue(Data,Props);
-
+	
+	/*
+	Instant 型 GE（药水回血、消耗）改的是 BaseValue；PreAttributeChange 只能钳 CurrentValue（显示层），
+	所以 Base 里囤了一堆“看不见的多余血量”，消耗时先吃这隐藏部分，看起来就是“不从 100 开始掉”。
+	PostGameplayEffectExecute 里的 SetHealth(Clamp(...)) 走 SetNumericAttributeBase，
+	把 Base 修正回来——这才是它的不可替代性。
+	├─ BaseValue  = 100   ← 底账：永久性的、持久的真实数值
+	└─ CurrentValue = 150 ← 面板：Base + 当前所有激活的临时修改器，算出来的最终值
+	*/
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));

@@ -40,6 +40,13 @@ void AAuraCharacter::OnRep_PlayerState()
 	
 }
 
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	return  AuraPlayerState->GetPlayerLevel();
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -49,8 +56,9 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
-
-
+	
+	ApplyEffectToSelf();
+	
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		if (AAuraHUD* AuraHUD = AuraPlayerController->GetHUD<AAuraHUD>())
@@ -59,6 +67,4 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 	}
 	
-	ApplyEffectToSelf();
-		
 }

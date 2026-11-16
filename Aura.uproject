@@ -28,10 +28,10 @@
 			"Name": "GameplayAbilities",
 			"Enabled": true
 		},
-        {
-            "Name": "GASAttachEditor",
-            "Enabled": true
-        },
+		{
+			"Name": "GASAttachEditor",
+			"Enabled": true
+		},
 		{
 			"Name": "BlueprintAssist",
 			"Enabled": true,
